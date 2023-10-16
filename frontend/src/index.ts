@@ -1,21 +1,20 @@
+//must be kept in sync with lib.rs
 interface Wasm {
     add(a:number,b:number): number;
 }
 
-
-alert("hi")
-
-fetch("./logic.wasm")
+fetch("./build/wasm32-unknown-unknown/debug/logic.wasm ")
   .then((res) => res.arrayBuffer())
   .then((bytees) =>
     WebAssembly.instantiate(bytees, { })
   )
-  .then((wasm) => {
-      const test:Wasm = (wasm.instance.exports as any);
-      console.log(test.add(1,2))
+  .then((model) => {
+      const test:Wasm = (model.instance.exports as any);
+      //main code here
+      alert(`${test.add(1,2)}`)
+      // while (true) {
+      //   //wasm tick
+      //   //canvas render
+      // }
   });
 
-// while (true) {
-//   //wasm tick
-//   //canvas render
-// }
