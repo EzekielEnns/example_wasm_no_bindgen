@@ -1,7 +1,5 @@
 #![allow(dead_code)]
 
-use std::println;
-
 const WIDTH:usize = 10;
 const HEIGHT:usize = 10;
 
@@ -29,17 +27,19 @@ pub unsafe extern "C" fn plyMove(l:u8,d:u8,u:u8,r:u8) -> u8{
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn test()->usize{
-    println!("{}",WORLD.level.len());
-    Game::get_index(&WORLD.player.pos)
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn tick()->*const u8{
     WORLD.level[Game::get_index(&WORLD.player.pos)] = WORLD.player.value;
     WORLD.level.as_ptr()
 }
 
+#[no_mangle]
+pub unsafe extern "C" fn get_height()->usize{
+    HEIGHT
+}
+#[no_mangle]
+pub unsafe extern "C" fn get_width()->usize{
+    WIDTH
+}
 
 #[repr(C)] 
 pub struct Game {
@@ -74,7 +74,6 @@ mod tests {
     fn it_works() {
         unsafe {
             println!("hi");
-            test();
             tick();
         }
     }

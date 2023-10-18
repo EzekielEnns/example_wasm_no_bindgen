@@ -2,12 +2,13 @@
   "name": "testing",
   "module": "index.ts",
   "type": "module",
-  "scripts":{
-     "start":"bun --watch run index.ts"
+  "scripts": {
+    "start": "bun --watch run index.ts"
   },
   "devDependencies": {
     "@stricjs/router": "^5.0.3",
     "@stricjs/utils": "^1.5.6",
+    "@types/web": "^0.0.117",
     "bun-types": "^1.0.6"
   },
   "peerDependencies": {
