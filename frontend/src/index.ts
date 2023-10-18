@@ -16,7 +16,6 @@ fetch("./build/wasm32-unknown-unknown/debug/logic.wasm ")
   .then((model) => {
       //Read:: https://radu-matei.com/blog/practical-guide-to-wasm-memory/
       const test:Wasm = (model.instance.exports as any);
-      //main code here
       let ptr = test.tick();
       console.log(model.instance.exports)
       const arr = new Uint8Array(test.memory.buffer,ptr, 10*10)
