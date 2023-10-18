@@ -67,6 +67,7 @@ pub struct Entity {
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
 
     #[test]

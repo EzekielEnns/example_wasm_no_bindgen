@@ -9,4 +9,4 @@ let rust = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
  unstableTarball = fetchTarball
     "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
   unstable = import unstableTarball { };
-in pkgs.mkShell { packages = [ rust rust-analyzer unstable.bun ]; }
+in pkgs.mkShell { packages = [ rust rust-analyzer unstable.bun  ]; }
