@@ -16,7 +16,7 @@ fetch("./build/wasm32-unknown-unknown/debug/logic.wasm ")
   .then((model) => {
       //Read:: https://radu-matei.com/blog/practical-guide-to-wasm-memory/
       const sim:Wasm = (model.instance.exports as any);
-      const canvas = document.getElementById("game-canvas") as HTMLCanvasElement;
+      const canvas = document.getElementById("demo-canvas") as HTMLCanvasElement;
       canvas.height = 500;
       canvas.width = 500;
       const ctx = canvas?.getContext('2d');
@@ -29,7 +29,7 @@ fetch("./build/wasm32-unknown-unknown/debug/logic.wasm ")
       const renderLoop = () => {
 
           if (ctx) {
-
+//https://webglfundamentals.org/
               //fml guess ill do webgl
               let lineHeight = ctx.measureText("@").width * 1.2;
               console.log("hi")
