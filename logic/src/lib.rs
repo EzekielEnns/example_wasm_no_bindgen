@@ -1,7 +1,16 @@
 #![allow(dead_code)]
+//https://tung.github.io/posts/rust-and-webassembly-without-a-bundler/
 
 const WIDTH:usize = 90;
 const HEIGHT:usize = 30;
+#[no_mangle]
+pub unsafe extern "C" fn get_height()->usize{
+    HEIGHT
+}
+#[no_mangle]
+pub unsafe extern "C" fn get_width()->usize{
+    WIDTH
+}
 
 static mut WORLD: Game = Game{
    player:Entity{
@@ -9,25 +18,24 @@ static mut WORLD: Game = Game{
        value: b'@',
        update: b'0',
    },
-   level: [b'.';HEIGHT*WIDTH],
-   map: [b'.';HEIGHT*WIDTH]
+   level: [b'.';HEIGHT*WIDTH], //current sim
+   map: [b'.';HEIGHT*WIDTH]   //bases of sim
 };
-
-
-//https://tung.github.io/posts/rust-and-webassembly-without-a-bundler/
 #[no_mangle]
-pub extern "C" fn add(left: usize, right: usize) -> usize {
-    left + right
+pub unsafe extern "C" fn tick()->*const u8{
+    //there should be a way to do this
+    WORLD.level = WORLD.map;
+    ply_update();
+
+    WORLD.level.as_ptr()
 }
-#[no_mangle]                    //TODO use a single u8
+
+#[no_mangle]                   
 pub unsafe extern "C" fn plyMove(v:u8) {
     WORLD.player.update |= v;
 }
 
-#[no_mangle]
-pub unsafe extern "C" fn tick()->*const u8{
-    //copy this over TODO better way to do it 
-    WORLD.map = WORLD.level;
+pub unsafe fn ply_update() {
     let update = WORLD.player.update;
     if update & 0b10000000 != 0 {
         WORLD.player.pos.x -= 1;
@@ -42,18 +50,9 @@ pub unsafe extern "C" fn tick()->*const u8{
         WORLD.player.pos.x += 1;
     }
     WORLD.player.update = 0;
-    WORLD.map[Game::get_index(&WORLD.player.pos)] = WORLD.player.value;
-    WORLD.map.as_ptr()
+    WORLD.level[Game::get_index(&WORLD.player.pos)] = WORLD.player.value;
 }
 
-#[no_mangle]
-pub unsafe extern "C" fn get_height()->usize{
-    HEIGHT
-}
-#[no_mangle]
-pub unsafe extern "C" fn get_width()->usize{
-    WIDTH
-}
 
 #[repr(C)] 
 pub struct Game {
@@ -78,6 +77,21 @@ pub struct Entity {
     pos: Pos,
     value: u8,
     update: u8
+}
+/*
+ * 888
+ * 888
+ *
+ * (-1,0),(1,0),(-1,1),(0,1), (1,1)
+ */
+struct Region {
+    pos: [i32;10],
+}
+
+impl Region {
+    //calculate if there is a over 
+    fn area(i:Pos){
+    }
 }
 
 

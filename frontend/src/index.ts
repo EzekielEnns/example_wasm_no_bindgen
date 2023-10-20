@@ -1,7 +1,6 @@
 //https://www.adammarcwilliams.co.uk/creating-bitmap-text-pixi/
 
 interface Wasm {
-  add(a: number, b: number): number;
   plyMove(a:number): number;
   tick(): number;
   get_height(): number;
