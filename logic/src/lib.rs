@@ -1,14 +1,16 @@
 #![allow(dead_code)]
 
-const WIDTH:usize = 10;
-const HEIGHT:usize = 10;
+const WIDTH:usize = 90;
+const HEIGHT:usize = 30;
 
 static mut WORLD: Game = Game{
    player:Entity{
-       pos: Pos{y:HEIGHT as u8/2,x:WIDTH as u8/2},
-       value: b'@'
+       pos: Pos{y:HEIGHT as u32/2,x:WIDTH as u32/2},
+       value: b'@',
+       update: b'0',
    },
-   level: [b'.';HEIGHT*WIDTH]
+   level: [b'.';HEIGHT*WIDTH],
+   map: [b'.';HEIGHT*WIDTH]
 };
 
 
@@ -18,18 +20,30 @@ pub extern "C" fn add(left: usize, right: usize) -> usize {
     left + right
 }
 #[no_mangle]                    //TODO use a single u8
-pub unsafe extern "C" fn plyMove(l:u8,d:u8,u:u8,r:u8) -> u8{
-    WORLD.player.pos.y += d;
-    WORLD.player.pos.y -= u;
-    WORLD.player.pos.x += r;
-    WORLD.player.pos.x -= l;
-    WORLD.player.pos.y
+pub unsafe extern "C" fn plyMove(v:u8) {
+    WORLD.player.update |= v;
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn tick()->*const u8{
-    WORLD.level[Game::get_index(&WORLD.player.pos)] = WORLD.player.value;
-    WORLD.level.as_ptr()
+    //copy this over TODO better way to do it 
+    WORLD.map = WORLD.level;
+    let update = WORLD.player.update;
+    if update & 0b10000000 != 0 {
+        WORLD.player.pos.x -= 1;
+    }
+    if update & 0b01000000 != 0 {
+        WORLD.player.pos.y += 1;
+    }
+    if update & 0b00100000 != 0 {
+        WORLD.player.pos.y -= 1;
+    }
+    if update & 0b00010000 != 0 {
+        WORLD.player.pos.x += 1;
+    }
+    WORLD.player.update = 0;
+    WORLD.map[Game::get_index(&WORLD.player.pos)] = WORLD.player.value;
+    WORLD.map.as_ptr()
 }
 
 #[no_mangle]
@@ -44,24 +58,26 @@ pub unsafe extern "C" fn get_width()->usize{
 #[repr(C)] 
 pub struct Game {
     player: Entity,
-    level: [u8; WIDTH*HEIGHT]
+    level: [u8; WIDTH*HEIGHT],
+    map: [u8; WIDTH*HEIGHT],
 }
 
 impl Game {
     fn get_index(p: &Pos)-> usize{
-        return (p.y * WIDTH as u8 + p.x) as usize;
+        return (p.y * WIDTH as u32 + p.x) as usize;
     }
 }
 
 #[derive(Copy,Clone,Debug)]
 pub struct Pos {
-    y:u8,
-    x:u8
+    y:u32,
+    x:u32
 }
 
 pub struct Entity {
     pos: Pos,
-    value: u8
+    value: u8,
+    update: u8
 }
 
 

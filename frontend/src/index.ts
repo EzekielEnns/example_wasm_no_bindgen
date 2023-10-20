@@ -2,12 +2,13 @@
 
 interface Wasm {
   add(a: number, b: number): number;
-  plyMove(l: number, d: number, u: number, r: number): number;
+  plyMove(a:number): number;
   tick(): number;
   get_height(): number;
   get_width(): number;
   memory: WebAssembly.Memory;
 }
+
 var cvs = document.getElementById("test");
 fetch("./build/wasm32-unknown-unknown/debug/logic.wasm ")
   .then((res) => res.arrayBuffer())
@@ -17,18 +18,37 @@ fetch("./build/wasm32-unknown-unknown/debug/logic.wasm ")
     const sim: Wasm = model.instance.exports as any;
     window.addEventListener("keydown", (e) => {
       console.log(e.key);
-      if (e.key == "k") {
-          sim.plyMove(0,0,1,0)
+      let mv = 0b00000000;
+      if (e.key == "h") {
+          mv |= 0b10000000;
       }
       if (e.key == "j") {
-          sim.plyMove(0,1,0,0)
+          mv |= 0b01000000;
       }
-      if (e.key == "h") {
-          sim.plyMove(1,0,0,0)
+      if (e.key == "k") {
+          mv |= 0b00100000;
       }
       if (e.key == "l") {
-          sim.plyMove(0,0,0,1)
+          mv |= 0b00010000;
       }
+      sim.plyMove(mv)
+    });
+    window.addEventListener("keyup", (e) => {
+      console.log(e.key);
+      let mv = 0b00000000;
+      if (e.key == "h") {
+          mv &= 0b01110000;
+      }
+      if (e.key == "j") {
+          mv &= 0b10110000;
+      }
+      if (e.key == "k") {
+          mv &= 0b11010000;
+      }
+      if (e.key == "l") {
+          mv &= 0b11100000;
+      }
+      sim.plyMove(mv)
     });
     const w = sim.get_width();
     const h = sim.get_height();
@@ -37,12 +57,11 @@ fetch("./build/wasm32-unknown-unknown/debug/logic.wasm ")
     };
     const renderLoop = () => {
       const ptr = sim.tick();
-      const arr = new Uint8Array(sim.memory.buffer, ptr, 10 * 10);
-      //TODO do this is a some kind of animation loop
+      const arr = new Uint8Array(sim.memory.buffer, ptr, h * w);
       let out = "";
       for (let j = 0; j < h; j++) {
         for (let i = 0; i < w; i++) {
-          out += " " + String.fromCharCode(arr[getIndex(j, i)]) + " ";
+          out += "" + String.fromCharCode(arr[getIndex(j, i)]) + "";
         }
         out += "\n";
       }
