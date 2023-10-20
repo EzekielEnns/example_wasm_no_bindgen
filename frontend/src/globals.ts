@@ -1,14 +1,17 @@
+export const WIDTH = 10;
+export const height = 10;
 export const VERTEXSHADER =`#version 300 es
+    //lowp
     precision mediump float;
-    attribute vec4 a_pos; //postion of vert
+    in vec4 a_pos; //postion of vert
     attribute vec2 a_textCoor; //coordinate of text 
     
-    uniform mat4 u_matrix; //used for postion of glyph
+    //uniform mat4 u_matrix; //used for postion of glyph
     out vec4 v_textCoor;     //glyph coor
 
     void main() {
         //multiply postion by the matrix 
-        gl_Position = u_matrix * a_pos;
+        gl_Position = a_pos;
         //Pass coor
         v_textCoor = a_textCoor;
     }
@@ -20,13 +23,13 @@ export const FRAGMENTSHADER =`#version 300 es
     
     //set by js, sampler2D is a type
     uniform sampler2D u_texture;
-    uniform vec4 u_color;
+    //uniform vec4 u_color;
     
 
     void main() {
         //https://thebookofshaders.com/glossary/?search=texture2D
         //getting color from texture at current coor/pixel
-        gl_FragColor = texture2D(u_texture, v_textCoor) * u_color;
+        gl_FragColor = texture2D(u_texture, v_textCoor); // * u_color;
     }
 `;
 //https://opengameart.org/content/8x8-font-chomps-wacky-worlds-beta

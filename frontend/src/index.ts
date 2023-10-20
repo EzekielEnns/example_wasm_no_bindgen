@@ -1,5 +1,5 @@
-//must be kept in sync with lib.rs
-import * as THREE from "three";
+//https://www.adammarcwilliams.co.uk/creating-bitmap-text-pixi/
+
 interface Wasm {
   add(a: number, b: number): number;
   plyMove(l: number, d: number, u: number, r: number): number;
@@ -8,9 +8,8 @@ interface Wasm {
   get_width(): number;
   memory: WebAssembly.Memory;
 }
-//TODO
-//https://codesandbox.io/s/css-tricks-text-as-canvas-texture-6q6o7?from-embed=&file=/src/Text.js
-//https://css-tricks.com/techniques-for-rendering-text-with-webgl/
+
+var kill = document.getElementById("test")
 fetch("./build/wasm32-unknown-unknown/debug/logic.wasm ")
   .then((res) => res.arrayBuffer())
   .then((bytees) => WebAssembly.instantiate(bytees, {}))
@@ -22,11 +21,18 @@ fetch("./build/wasm32-unknown-unknown/debug/logic.wasm ")
     const getIndex = (x: number, y: number) => {
       return x * w + y;
     };
-    //let aniId;
-    // const renderLoop = () => {
-    //   const ptr = sim.tick();
-    //   const arr = new Uint8Array(sim.memory.buffer, ptr, 10 * 10);
-    //   aniId = requestAnimationFrame(renderLoop);
-    // };
-    // renderLoop();
+        
+       const ptr = sim.tick();
+       const arr = new Uint8Array(sim.memory.buffer, ptr, 10 * 10);
+       //TODO do this is a some kind of animation loop
+       let out = "";
+       for (let j = 0; j < h; j++) {
+         for (let i = 0; i < w; i++) {
+           out += " " + String.fromCharCode(arr[getIndex(j, i)]) + " ";
+         }
+         out += "\n";
+       }
+       if (kill) {
+           kill.textContent = out
+       }
   });
