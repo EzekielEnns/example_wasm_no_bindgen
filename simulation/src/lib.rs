@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+//good reffrence
 //https://tung.github.io/posts/rust-and-webassembly-without-a-bundler/
 
 const WIDTH:usize = 90;
@@ -23,7 +24,7 @@ static mut WORLD: Game = Game{
 };
 #[no_mangle]
 pub unsafe extern "C" fn tick()->*const u8{
-    //there should be a way to do this
+    //there should be a way to do this better
     WORLD.level = WORLD.map;
     ply_update();
 
@@ -38,16 +39,16 @@ pub unsafe extern "C" fn plyMove(v:u8) {
 pub unsafe fn ply_update() {
     let update = WORLD.player.update;
     if update & 0b10000000 != 0 {
-        WORLD.player.pos.x -= 1;
+        WORLD.player.pos.x -= if WORLD.player.pos.x == 0 {0} else {1} ;
     }
     if update & 0b01000000 != 0 {
-        WORLD.player.pos.y += 1;
+        WORLD.player.pos.y += if WORLD.player.pos.y == HEIGHT as u32 -1 {0} else {1} ;
     }
     if update & 0b00100000 != 0 {
-        WORLD.player.pos.y -= 1;
+        WORLD.player.pos.y -= if WORLD.player.pos.y == 1 {0} else {1} ;
     }
     if update & 0b00010000 != 0 {
-        WORLD.player.pos.x += 1;
+        WORLD.player.pos.x += if WORLD.player.pos.x == WIDTH as u32 -1 {0} else {1} ;
     }
     WORLD.player.update = 0;
     WORLD.level[Game::get_index(&WORLD.player.pos)] = WORLD.player.value;
@@ -78,22 +79,6 @@ pub struct Entity {
     value: u8,
     update: u8
 }
-/*
- * 888
- * 888
- *
- * (-1,0),(1,0),(-1,1),(0,1), (1,1)
- */
-struct Region {
-    pos: [i32;10],
-}
-
-impl Region {
-    //calculate if there is a over 
-    fn area(i:Pos){
-    }
-}
-
 
 #[cfg(test)]
 mod tests {

@@ -2,11 +2,15 @@ import { Router } from '@stricjs/router';
 import { group } from '@stricjs/utils';
 import { watch } from 'fs';
 
-const watcher = watch(import.meta.dir+"/src",()=>{
 Bun.build({
     entrypoints: ['./src/index.ts'],
     outdir: './dist'
 })
+const watcher = watch(import.meta.dir+"/src",()=>{
+    Bun.build({
+        entrypoints: ['./src/index.ts'],
+        outdir: './dist'
+    })
 })
 
 
