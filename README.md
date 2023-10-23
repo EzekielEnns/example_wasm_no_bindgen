@@ -1,6 +1,15 @@
 # example of using raw wasm32-unknown-unknown inside browser
 this is a simple text based 'game' you just move a `@` on a map using `hjkl` (vim motions)
+
+## how it works
+a javascript(source is ts) file loads in a wasm binary into memeory, it then sets up event listerns 
+for pushing input into the exposed functions from the binary's interface, then in a renderloop
+it progresses the simulation inside the wasm binary and reads the current output of the simulation
+using a pointer to a location in the binary's memeory, that output is then built into a 
+ascii string and rendered to a pre tag
+
 this code is broken up into two dir's
+
 ### ./simulation 
 is a rust project with two neat expections: the default build output it 
 set to `wasm32-unknown-unknown` and two custom commands are set for cargo
